@@ -4,7 +4,6 @@ from chains import Chain
 from portfolio import Portfolio
 from utils import clean_text
 
-
 def create_streamlit_app(llm, portfolio, clean_text):
     url_input = st.text_input("Enter a URL:", value=" ")
     name_input = st.text_input("Enter your Name:", value=" ")
