@@ -4,6 +4,10 @@ from chains import Chain
 from portfolio import Portfolio
 from utils import clean_text
 
+
+# Clear cache on app start
+st.cache_resource.clear()
+
 def create_streamlit_app(llm, portfolio, clean_text):
     st.title("📧 Cold Mail Generator")
     url_input = st.text_input("Enter a URL:", value=" ")
