@@ -5,6 +5,7 @@ from portfolio import Portfolio
 from utils import clean_text
 
 def create_streamlit_app(llm, portfolio, clean_text):
+    st.title("📧 Cold Mail Generator")
     url_input = st.text_input("Enter a URL:", value=" ")
     name_input = st.text_input("Enter your Name:", value=" ")
     role_input = st.text_input("Enter your Role:", value=" ")
