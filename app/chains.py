@@ -1,15 +1,25 @@
 import os
+import streamlit as st
+from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.exceptions import OutputParserException
-from dotenv import load_dotenv
 
-load_dotenv()
+# 🔐 Load API key smartly
+if "GROQ_API_KEY" in st.secrets:
+    groq_api_key = st.secrets["GROQ_API_KEY"]
+else:
+    load_dotenv()
+    groq_api_key = os.getenv("GROQ_API_KEY")
 
 class Chain:
     def __init__(self):
-        self.llm = ChatGroq(temperature=0, groq_api_key=os.getenv("GROQ_API_KEY"), model_name="llama-3.1-70b-versatile")
+        self.llm = ChatGroq(
+            temperature=0,
+            groq_api_key=groq_api_key,  # ✅ Use the smartly loaded one
+            model_name="llama-3.1-70b-versatile"
+        )
 
     def extract_jobs(self, cleaned_text):
         prompt_extract = PromptTemplate.from_template(
@@ -32,26 +42,31 @@ class Chain:
             raise OutputParserException("Context too big. Unable to parse jobs.")
         return res if isinstance(res, list) else [res]
 
-    def write_mail(self, job,name,role,about_yourself, links):
+    def write_mail(self, job, name, role, about_yourself, links):
         prompt_email = PromptTemplate.from_template(
             """
-            ### JOB DESCRIPTION"
+            ### JOB DESCRIPTION
             {job_description}
 
-            ###INSTRUCTION:
+            ### INSTRUCTION:
             You are {name_input}, a {role_input}.
             {about_yourself_input}.
-            Also add the most relevant ones from the following links to showcase my portfolio: {link_list}
-            Remember you are {name_input} 
+            Also add the most relevant ones from the following links to showcase your portfolio: {link_list}
+            Remember, you are {name_input}
 
-            ### EMAIL(NO PREAMBLE):
+            ### EMAIL (NO PREAMBLE):
 
             """
         )
         chain_email = prompt_email | self.llm
-        res = chain_email.invoke({"job_description": str(job), "link_list": links, "name_input": name, "role_input": role,
-                                  "about_yourself_input": about_yourself})
+        res = chain_email.invoke({
+            "job_description": str(job),
+            "link_list": links,
+            "name_input": name,
+            "role_input": role,
+            "about_yourself_input": about_yourself
+        })
         return res.content
 
 if __name__ == "__main__":
-    print(os.getenv("GROQ_API_KEY"))
+    print("GROQ Key used:", groq_api_key)  # Optional debug log
