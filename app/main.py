@@ -8,13 +8,13 @@ st.cache_resource.clear()
 def create_streamlit_app(llm, clean_text):
     st.title("📧 Cold Mail Generator")
 
-    url_input = st.text_input("🌐 Enter the Job/Career Page URL:", value=" ")
-    name_input = st.text_input("🙋 Your Name:", value=" ")
-    role_input = st.text_input("💼 Your Role:", value=" ")
-    about_yourself_input = st.text_area("🧠 Tell us About Yourself:", value=" ")
-    links_input = st.text_area("🔗 Paste your LinkedIn, GitHub, or portfolio links here:")
-    project_input = st.text_area("🛠️ Mention a project you'd like to showcase (optional):")
-    language_input = st.selectbox("🌐 Choose Email Language:", [
+    url_input = st.text_input(" Enter the Job/Career Page URL:", value=" ")
+    name_input = st.text_input(" Your Name:", value=" ")
+    role_input = st.text_input(" Your Role:", value=" ")
+    about_yourself_input = st.text_area(" Tell us About Yourself:", value=" ")
+    links_input = st.text_area(" Paste your LinkedIn, GitHub, or portfolio links here:")
+    project_input = st.text_area(" Mention a project you'd like to showcase (optional):")
+    language_input = st.selectbox(" Choose Email Language:", [
         "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
     ])
 
@@ -33,7 +33,7 @@ def create_streamlit_app(llm, clean_text):
     }
 
     selected_reason_ui = st.selectbox("✉️ Why are you writing this email?", list(reason_explanations.keys()))
-    st.markdown(f"🧠 **Reason Explained:** {reason_explanations[selected_reason_ui]}")
+    st.markdown(f" **Reason Explained:** {reason_explanations[selected_reason_ui]}")
     selected_reason_short = selected_reason_ui.split(" ")[0] if selected_reason_ui != "Follow-Up on Application" else "Follow-Up"
 
     submit_button = st.button("🚀 Generate Cold Email")
