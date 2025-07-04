@@ -1,25 +1,16 @@
 import os
-import streamlit as st
-from dotenv import load_dotenv
 from langchain_groq import ChatGroq
 from langchain_core.prompts import PromptTemplate
 from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.exceptions import OutputParserException
+from dotenv import load_dotenv
 
-# 🔐 Load API key smartly
-if "GROQ_API_KEY" in st.secrets:
-    groq_api_key = st.secrets["GROQ_API_KEY"]
-else:
-    load_dotenv()
-    groq_api_key = os.getenv("GROQ_API_KEY")
+load_dotenv()
 
 class Chain:
+
     def __init__(self):
-        self.llm = ChatGroq(
-            temperature=0,
-            groq_api_key=groq_api_key,  # ✅ Use the smartly loaded one
-            model_name="llama-3.1-70b-versatile"
-        )
+        self.llm = ChatGroq(temperature=0, groq_api_key=os.getenv("GROQ_API_KEY"), model_name="llama3-70b-8192")
 
     def extract_jobs(self, cleaned_text):
         prompt_extract = PromptTemplate.from_template(
@@ -35,6 +26,7 @@ class Chain:
         )
         chain_extract = prompt_extract | self.llm
         res = chain_extract.invoke(input={"page_data": cleaned_text})
+
         try:
             json_parser = JsonOutputParser()
             res = json_parser.parse(res.content)
@@ -55,7 +47,6 @@ class Chain:
             Remember, you are {name_input}
 
             ### EMAIL (NO PREAMBLE):
-
             """
         )
         chain_email = prompt_email | self.llm
@@ -68,5 +59,7 @@ class Chain:
         })
         return res.content
 
+
 if __name__ == "__main__":
-    print("GROQ Key used:", groq_api_key)  # Optional debug log
+    groq_api_key = os.getenv("GROQ_API_KEY")
+    print("GROQ Key used:", groq_api_key)
