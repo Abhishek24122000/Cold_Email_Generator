@@ -3,7 +3,6 @@ from langchain_community.document_loaders import WebBaseLoader
 from chains import Chain
 from utils import clean_text
 
-
 st.cache_resource.clear()
 
 def create_streamlit_app(llm, clean_text):
@@ -14,6 +13,7 @@ def create_streamlit_app(llm, clean_text):
     role_input = st.text_input("💼 Your Role:", value=" ")
     about_yourself_input = st.text_area("🧠 Tell us About Yourself:", value=" ")
     links_input = st.text_area("🔗 Paste your LinkedIn, GitHub, or portfolio links here:")
+    project_input = st.text_area("🛠️ Mention a project you'd like to showcase (optional):")
 
     submit_button = st.button("🚀 Generate Cold Email")
 
@@ -30,7 +30,8 @@ def create_streamlit_app(llm, clean_text):
                     name=name_input,
                     role=role_input,
                     about_yourself=about_yourself_input,
-                    links=links_input  # ✅ user input
+                    links=links_input,
+                    project_showcase=project_input
                 )
                 st.subheader(f"✉️ Cold Email for {job.get('role', 'Unknown Role')}")
                 st.code(email, language='markdown')
