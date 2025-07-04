@@ -51,14 +51,25 @@ class Chain:
             Include relevant links from: {link_list}
             {project_section}
             Write the email in {selected_language}.
-            If the language is Japanese, ensure to use formal business-level Keigo (敬語).
-            Make it personalized, clear, and professional.
+
+            If the language is Japanese:
+            - Use 敬語 (business-level Keigo) throughout the email.
+            - Do NOT use English project titles unless unavoidable.
+            - Explain project or tools briefly in Japanese with natural flow.
+            - Keep GitHub or LinkedIn links in English but separate from the main body.
+            - Avoid unnatural mix like "CRM CRMポジション" or redundant katakana phrases.
+            - Close with a polite, formal ending like 「ご検討のほどよろしくお願い申し上げます」.
+
+            Make the email feel personalized, clear, and professionally tailored.
 
             ### EMAIL (NO PREAMBLE):
             """
         )
 
-        project_section = f"You would also like to highlight the following project as a demonstration of your skills: {project_showcase}" if project_showcase else ""
+        project_section = (
+            f"You would also like to highlight the following project as a demonstration of your skills: {project_showcase}"
+            if project_showcase else ""
+        )
 
         chain_email = prompt_email | self.llm
         res = chain_email.invoke({
