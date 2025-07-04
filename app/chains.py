@@ -34,7 +34,7 @@ class Chain:
             raise OutputParserException("Context too big. Unable to parse jobs.")
         return res if isinstance(res, list) else [res]
 
-    def write_mail(self, job, name, role, about_yourself, links):
+    def write_mail(self, job, name, role, about_yourself, links, project_showcase=""):
         prompt_email = PromptTemplate.from_template(
             """
             ### JOB DESCRIPTION
@@ -44,18 +44,21 @@ class Chain:
             You are {name_input}, a {role_input}.
             {about_yourself_input}.
             Also add the most relevant ones from the following links to showcase your portfolio: {link_list}
+            {project_section}
             Remember, you are {name_input}
 
             ### EMAIL (NO PREAMBLE):
             """
         )
+        project_section = f"You also want to showcase this project: {project_showcase}" if project_showcase.strip() else ""
         chain_email = prompt_email | self.llm
         res = chain_email.invoke({
             "job_description": str(job),
             "link_list": links,
             "name_input": name,
             "role_input": role,
-            "about_yourself_input": about_yourself
+            "about_yourself_input": about_yourself,
+            "project_section": project_section
         })
         return res.content
 
