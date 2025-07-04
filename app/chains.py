@@ -10,7 +10,11 @@ load_dotenv()
 class Chain:
 
     def __init__(self):
-        self.llm = ChatGroq(temperature=0, groq_api_key=os.getenv("GROQ_API_KEY"), model_name="llama3-70b-8192")
+        self.llm = ChatGroq(
+            temperature=0,
+            groq_api_key=os.getenv("GROQ_API_KEY"),
+            model_name="llama3-70b-8192"
+        )
 
     def extract_jobs(self, cleaned_text):
         prompt_extract = PromptTemplate.from_template(
@@ -34,7 +38,7 @@ class Chain:
             raise OutputParserException("Context too big. Unable to parse jobs.")
         return res if isinstance(res, list) else [res]
 
-    def write_mail(self, job, name, role, about_yourself, links, project_showcase=""):
+    def write_mail(self, job, name, role, about_yourself, links, project_showcase="", language="English", reason="Job"):
         prompt_email = PromptTemplate.from_template(
             """
             ### JOB DESCRIPTION
@@ -43,14 +47,19 @@ class Chain:
             ### INSTRUCTION:
             You are {name_input}, a {role_input}.
             {about_yourself_input}.
-            Also add the most relevant ones from the following links to showcase your portfolio: {link_list}
+            Reason for writing this email: {email_reason}.
+            Include relevant links from: {link_list}
             {project_section}
-            Remember, you are {name_input}
+            Write the email in {selected_language}.
+            If the language is Japanese, ensure to use formal business-level Keigo (敬語).
+            Make it personalized, clear, and professional.
 
             ### EMAIL (NO PREAMBLE):
             """
         )
-        project_section = f"You also want to showcase this project: {project_showcase}" if project_showcase.strip() else ""
+
+        project_section = f"You would also like to highlight the following project as a demonstration of your skills: {project_showcase}" if project_showcase else ""
+
         chain_email = prompt_email | self.llm
         res = chain_email.invoke({
             "job_description": str(job),
@@ -58,10 +67,11 @@ class Chain:
             "name_input": name,
             "role_input": role,
             "about_yourself_input": about_yourself,
-            "project_section": project_section
+            "project_section": project_section,
+            "selected_language": language,
+            "email_reason": reason
         })
         return res.content
-
 
 if __name__ == "__main__":
     groq_api_key = os.getenv("GROQ_API_KEY")
