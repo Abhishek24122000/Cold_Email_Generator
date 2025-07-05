@@ -1,9 +1,21 @@
 import streamlit as st
+import fitz
 from langchain_community.document_loaders import WebBaseLoader
 from chains import Chain
 from utils import clean_text
 
 st.cache_resource.clear()
+
+def extract_text_from_pdf(uploaded_file):
+    try:
+        doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
+        text = ""
+        for page in doc:
+            text += page.get_text()
+        return text
+    except Exception as e:
+        st.error(f"❌ Failed to extract resume text: {e}")
+        return ""
 
 def create_streamlit_app(llm, clean_text):
     st.title("📧 Cold Mail Generator")
@@ -12,8 +24,9 @@ def create_streamlit_app(llm, clean_text):
     name_input = st.text_input(" Your Name:", value=" ")
     role_input = st.text_input(" Your Role:", value=" ")
     about_yourself_input = st.text_area(" Tell us About Yourself:", value=" ")
+    resume_file = st.file_uploader(" Upload Your Resume (PDF)", type=["pdf"])
     links_input = st.text_area(" Paste your LinkedIn, GitHub, or portfolio links here:")
-    project_input = st.text_area(" Mention a project you'd like to showcase (optional):")
+    project_input = st.text_area("🛠 Mention a project you'd like to showcase (optional):")
     language_input = st.selectbox(" Choose Email Language:", [
         "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
     ])
@@ -32,17 +45,21 @@ def create_streamlit_app(llm, clean_text):
         "Follow-Up on Application": "Check in on your application status after applying."
     }
 
-    selected_reason_ui = st.selectbox("✉️ Why are you writing this email?", list(reason_explanations.keys()))
+    selected_reason_ui = st.selectbox(" Why are you writing this email?", list(reason_explanations.keys()))
     st.markdown(f" **Reason Explained:** {reason_explanations[selected_reason_ui]}")
     selected_reason_short = selected_reason_ui.split(" ")[0] if selected_reason_ui != "Follow-Up on Application" else "Follow-Up"
 
-    submit_button = st.button("🚀 Generate Cold Email")
+    submit_button = st.button(" Generate Cold Email")
 
     if submit_button:
         try:
             loader = WebBaseLoader([url_input])
             raw_text = loader.load().pop().page_content
             data = clean_text(raw_text)
+
+            resume_summary = ""
+            if resume_file:
+                resume_summary = extract_text_from_pdf(resume_file)
 
             jobs = llm.extract_jobs(data)
             for job in jobs:
@@ -54,7 +71,8 @@ def create_streamlit_app(llm, clean_text):
                     links=links_input,
                     project_showcase=project_input,
                     language=language_input,
-                    reason=selected_reason_short
+                    reason=selected_reason_short,
+                    resume=resume_summary
                 )
                 st.subheader(f"✉️ Cold Email for {job.get('role', 'Unknown Role')}")
                 st.code(email, language='markdown')
