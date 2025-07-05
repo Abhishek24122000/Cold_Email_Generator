@@ -2,8 +2,9 @@ import streamlit as st
 import fitz
 from langchain_community.document_loaders import WebBaseLoader
 from chains import Chain
-from utils import clean_text
+from utils import clean_text, clean_url
 
+st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
 st.cache_resource.clear()
 
 def extract_text_from_pdf(uploaded_file):
@@ -18,16 +19,52 @@ def extract_text_from_pdf(uploaded_file):
         return ""
 
 def create_streamlit_app(llm, clean_text):
-    st.title("📧 Cold Mail Generator")
+    st.markdown(
+        """
+        <style>
+        .title {
+            font-size:32px;
+            font-weight:700;
+            color:#2C3E50;
+        }
+        footer {visibility: hidden;}
+        .footer-text {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #eaeaea;
+            color: #555;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            z-index: 999;
+        }
+        </style>
+        <div class='title'>📧 Cold Mail Generator | Powered by LLaMA 70B + LangChain</div>
+        <hr>
+        """,
+        unsafe_allow_html=True
+    )
 
-    url_input = st.text_input(" Enter the Job/Career Page URL:", value=" ")
-    name_input = st.text_input(" Your Name:", value=" ")
-    role_input = st.text_input(" Your Role:", value=" ")
-    about_yourself_input = st.text_area(" Tell us About Yourself:", value=" ")
+    url_input = st.text_input(
+        "🌐 Enter the Job/Career Page URL:",
+        placeholder="e.g., https://company.com/careers",
+        help="Paste the careers or job listings page URL"
+    )
+
+    name_input = st.text_input(" Your Name:", value=" ", placeholder="Your full name")
+    role_input = st.text_input(" Your Role:", value=" ", placeholder="e.g., Data Analyst")
+    about_yourself_input = st.text_area(" Tell us About Yourself:", value=" ", placeholder="Summary or intro")
+
+    st.markdown("---")
+    st.subheader(" Upload Resume & Portfolio")
+
     resume_file = st.file_uploader(" Upload Your Resume (PDF)", type=["pdf"])
-    links_input = st.text_area(" Paste your LinkedIn, GitHub, or portfolio links here:")
-    project_input = st.text_area("Mention a project you'd like to showcase (optional):")
-    language_input = st.selectbox(" Choose Email Language:", [
+    links_input = st.text_area(" LinkedIn, GitHub, Portfolio:", placeholder="Paste your links here...")
+    project_input = st.text_area("🛠 Highlight a Project (optional):", placeholder="Describe a key project you want to showcase")
+
+    language_input = st.selectbox(" Email Language:", [
         "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
     ])
 
@@ -45,7 +82,7 @@ def create_streamlit_app(llm, clean_text):
         "Follow-Up on Application": "Check in on your application status after applying."
     }
 
-    selected_reason_ui = st.selectbox(" Why are you writing this email?", list(reason_explanations.keys()))
+    selected_reason_ui = st.selectbox("✉️ Why are you writing this email?", list(reason_explanations.keys()))
     st.markdown(f" **Reason Explained:** {reason_explanations[selected_reason_ui]}")
     selected_reason_short = selected_reason_ui.split(" ")[0] if selected_reason_ui != "Follow-Up on Application" else "Follow-Up"
 
@@ -53,7 +90,8 @@ def create_streamlit_app(llm, clean_text):
 
     if submit_button:
         try:
-            loader = WebBaseLoader([url_input])
+            raw_url = clean_url(url_input)
+            loader = WebBaseLoader([raw_url])
             raw_text = loader.load().pop().page_content
             data = clean_text(raw_text)
 
@@ -80,7 +118,17 @@ def create_streamlit_app(llm, clean_text):
         except Exception as e:
             st.error(f"❌ An Error Occurred: {e}")
 
+    st.markdown(
+        """
+        <div class='footer-text'>
+             Copyright © 2025 <strong>Abhishek</strong>. All rights reserved.
+            Built using Streamlit, Groq, and LangChain. <a href='https://github.com/Abhishek24122000/Cold_Email_Generator' target='_blank' style="color: #333;">View Source on GitHub</a>
+
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
 if __name__ == "__main__":
     chain = Chain()
-    st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
     create_streamlit_app(chain, clean_text)
