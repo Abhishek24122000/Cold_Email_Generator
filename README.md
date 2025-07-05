@@ -31,3 +31,12 @@ pip install -r requirements.txt
 
 ## Run the App Locally
 streamlit run app/main.py
+
+
+---
+---
+## 🙏 Attribution
+
+This project was originally inspired by a basic implementation from [Codebasics](https://github.com/codebasics/project-genai-cold-email-generator), licensed under the MIT License.  
+This version has been significantly modified and extended with custom features, LLM integration, vector database logic, security protocols, and a proprietary interface by **Abhishek**.  
+MIT license terms are respected, and original copyright is retained.
