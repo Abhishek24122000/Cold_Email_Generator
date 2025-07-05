@@ -26,7 +26,7 @@ def create_streamlit_app(llm, clean_text):
     about_yourself_input = st.text_area(" Tell us About Yourself:", value=" ")
     resume_file = st.file_uploader(" Upload Your Resume (PDF)", type=["pdf"])
     links_input = st.text_area(" Paste your LinkedIn, GitHub, or portfolio links here:")
-    project_input = st.text_area("🛠 Mention a project you'd like to showcase (optional):")
+    project_input = st.text_area("Mention a project you'd like to showcase (optional):")
     language_input = st.selectbox(" Choose Email Language:", [
         "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
     ])
