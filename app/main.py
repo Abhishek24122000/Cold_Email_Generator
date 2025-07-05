@@ -47,24 +47,22 @@ def create_streamlit_app(llm, clean_text):
         unsafe_allow_html=True
     )
 
-    url_input = st.text_input(
-        "🌐 Enter the Job/Career Page URL:",
-        placeholder="e.g., https://company.com/careers",
-        help="Paste the careers or job listings page URL"
-    )
+    url_input = st.text_input("🌐 Enter the Job/Career Page URL:",
+                              placeholder="e.g., https://company.com/careers",
+                              help="Paste the careers or job listings page URL")
 
-    name_input = st.text_input(" Your Name:", value=" ", placeholder="Your full name")
-    role_input = st.text_input(" Your Role:", value=" ", placeholder="e.g., Data Analyst")
-    about_yourself_input = st.text_area(" Tell us About Yourself:", value=" ", placeholder="Summary or intro")
+    name_input = st.text_input("Your Name:", placeholder="Your full name")
+    role_input = st.text_input("Your Role:", placeholder="e.g., Data Analyst")
+    about_yourself_input = st.text_area("Tell us About Yourself:", placeholder="Summary or intro")
 
     st.markdown("---")
-    st.subheader(" Upload Resume & Portfolio")
+    st.subheader("Upload Resume & Portfolio")
 
-    resume_file = st.file_uploader(" Upload Your Resume (PDF)", type=["pdf"])
-    links_input = st.text_area(" LinkedIn, GitHub, Portfolio:", placeholder="Paste your links here...")
+    resume_file = st.file_uploader("Upload Your Resume (PDF)", type=["pdf"])
+    links_input = st.text_area("LinkedIn, GitHub, Portfolio:", placeholder="Paste your links here...")
     project_input = st.text_area("🛠 Highlight a Project (optional):", placeholder="Describe a key project you want to showcase")
 
-    language_input = st.selectbox(" Email Language:", [
+    language_input = st.selectbox("Email Language:", [
         "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
     ])
 
@@ -83,10 +81,10 @@ def create_streamlit_app(llm, clean_text):
     }
 
     selected_reason_ui = st.selectbox("✉️ Why are you writing this email?", list(reason_explanations.keys()))
-    st.markdown(f" **Reason Explained:** {reason_explanations[selected_reason_ui]}")
+    st.markdown(f"**Reason Explained:** {reason_explanations[selected_reason_ui]}")
     selected_reason_short = selected_reason_ui.split(" ")[0] if selected_reason_ui != "Follow-Up on Application" else "Follow-Up"
 
-    submit_button = st.button(" Generate Cold Email")
+    submit_button = st.button("Generate Cold Email")
 
     if submit_button:
         try:
@@ -95,9 +93,7 @@ def create_streamlit_app(llm, clean_text):
             raw_text = loader.load().pop().page_content
             data = clean_text(raw_text)
 
-            resume_summary = ""
-            if resume_file:
-                resume_summary = extract_text_from_pdf(resume_file)
+            resume_summary = extract_text_from_pdf(resume_file) if resume_file else ""
 
             jobs = llm.extract_jobs(data)
             for job in jobs:
@@ -112,8 +108,9 @@ def create_streamlit_app(llm, clean_text):
                     reason=selected_reason_short,
                     resume=resume_summary
                 )
+
                 st.subheader(f"✉️ Cold Email for {job.get('role', 'Unknown Role')}")
-                st.code(email, language='markdown')
+                st.text_area("Your Cold Email (Edit or Copy)", value=email.strip(), height=400)
 
         except Exception as e:
             st.error(f"❌ An Error Occurred: {e}")
@@ -121,9 +118,8 @@ def create_streamlit_app(llm, clean_text):
     st.markdown(
         """
         <div class='footer-text'>
-             Copyright © 2025 <strong>Abhishek</strong>. All rights reserved.
+            Copyright © 2025 <strong>Abhishek</strong>. All rights reserved.
             Built using Streamlit, Groq, and LangChain. <a href='https://github.com/Abhishek24122000/Cold_Email_Generator' target='_blank' style="color: #333;">View Source on GitHub</a>
-
         </div>
         """,
         unsafe_allow_html=True
