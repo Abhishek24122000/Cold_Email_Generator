@@ -22,26 +22,10 @@ def create_streamlit_app(llm, clean_text):
     st.markdown(
     """
     <style>
-    body {
-        background-color: #000000 !important;
-        color: #FFFFFF !important;
-    }
-
     .title {
         font-size: 32px;
         font-weight: 700;
-        color: #FFFFFF !important;
-    }
-
-    .stTextInput, .stTextArea, .stSelectbox, .stFileUploader {
-        background-color: #1E1E1E !important;
-        color: #FFFFFF !important;
-        border: 1px solid #444 !important;
-    }
-
-    .stTextInput input, .stTextArea textarea {
-        color: #FFFFFF !important;
-        background-color: #1E1E1E !important;
+        color: #2C3E50;
     }
 
     footer {visibility: hidden;}
@@ -51,8 +35,8 @@ def create_streamlit_app(llm, clean_text):
         left: 0;
         bottom: 0;
         width: 100%;
-        background-color: #111111;
-        color: #BBBBBB;
+        background-color: #eaeaea;
+        color: #555;
         text-align: center;
         padding: 10px 0;
         font-size: 14px;
@@ -62,6 +46,7 @@ def create_streamlit_app(llm, clean_text):
     """,
     unsafe_allow_html=True
 )
+
 
     url_input = st.text_input("🌐 Enter the Job/Career Page URL:",
                               placeholder="e.g., https://company.com/careers",
