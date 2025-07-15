@@ -22,14 +22,19 @@ def create_streamlit_app(llm, clean_text):
     st.markdown(
     """
     <style>
-    .title {
-        font-size: 32px;
-        font-weight: 700;
+    .main-header {
+        font-size: 38px;
+        font-weight: 800;
         color: #2C3E50;
+        text-align: center;
+        margin-bottom: 20px;
     }
-
+    .title {
+        font-size: 24px;
+        font-weight: 600;
+        color: #4F4F4F;
+    }
     footer {visibility: hidden;}
-
     .footer-text {
         position: fixed;
         left: 0;
@@ -43,6 +48,9 @@ def create_streamlit_app(llm, clean_text):
         z-index: 999;
     }
     </style>
+
+    <div class='main-header'>🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)<br>Automate professional outreach in seconds</div>
+    <hr>
     """,
     unsafe_allow_html=True
 )
