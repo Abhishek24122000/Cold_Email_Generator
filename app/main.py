@@ -40,16 +40,21 @@ def create_streamlit_app(llm, clean_text):
             left: 0;
             bottom: 0;
             width: 100%;
-            background-color: #eaeaea;
-            color: #555;
+            background-color: transparent;
+            color: #AAAAAA;
             text-align: center;
-            padding: 10px 0;
-            font-size: 14px;
+            padding: 6px 0;
+            font-size: 12px;
+            font-weight: 300;
             z-index: 999;
+            font-family: 'Segoe UI', sans-serif;
         }
         </style>
 
-        <div class='main-header'>🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)<br>Automate professional outreach in seconds</div>
+        <div class='main-header'>
+            🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)<br>
+            Automate professional outreach in seconds
+        </div>
         <hr>
         """,
         unsafe_allow_html=True
@@ -126,8 +131,8 @@ def create_streamlit_app(llm, clean_text):
     st.markdown(
         """
         <div class='footer-text'>
-            Copyright © 2025 <strong>Abhishek</strong>. All rights reserved.
-            Built using Streamlit, Groq, and LangChain. <a href='https://github.com/Abhishek24122000/Cold_Email_Generator' target='_blank' style="color: #333;">View Source on GitHub</a>
+            © 2025 <strong style="font-weight:400;">Abhishek</strong>. All rights reserved. |
+            <a href='https://github.com/Abhishek24122000/Cold_Email_Generator' target='_blank' style="color: #BBBBBB; text-decoration: none;">GitHub</a>
         </div>
         """,
         unsafe_allow_html=True
