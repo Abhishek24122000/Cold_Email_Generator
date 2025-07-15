@@ -20,41 +20,40 @@ def extract_text_from_pdf(uploaded_file):
 
 def create_streamlit_app(llm, clean_text):
     st.markdown(
-    """
-    <style>
-    .main-header {
-        font-size: 38px;
-        font-weight: 800;
-        color: #2C3E50;
-        text-align: center;
-        margin-bottom: 20px;
-    }
-    .title {
-        font-size: 24px;
-        font-weight: 600;
-        color: #4F4F4F;
-    }
-    footer {visibility: hidden;}
-    .footer-text {
-        position: fixed;
-        left: 0;
-        bottom: 0;
-        width: 100%;
-        background-color: #eaeaea;
-        color: #555;
-        text-align: center;
-        padding: 10px 0;
-        font-size: 14px;
-        z-index: 999;
-    }
-    </style>
+        """
+        <style>
+        .main-header {
+            font-size: 38px;
+            font-weight: 800;
+            color: #FFFFFF !important;
+            text-align: left;
+            margin-bottom: 20px;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #4F4F4F;
+        }
+        footer {visibility: hidden;}
+        .footer-text {
+            position: fixed;
+            left: 0;
+            bottom: 0;
+            width: 100%;
+            background-color: #eaeaea;
+            color: #555;
+            text-align: center;
+            padding: 10px 0;
+            font-size: 14px;
+            z-index: 999;
+        }
+        </style>
 
-    <div class='main-header'>🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)<br>Automate professional outreach in seconds</div>
-    <hr>
-    """,
-    unsafe_allow_html=True
-)
-
+        <div class='main-header'>🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)<br>Automate professional outreach in seconds</div>
+        <hr>
+        """,
+        unsafe_allow_html=True
+    )
 
     url_input = st.text_input("🌐 Enter the Job/Career Page URL:",
                               placeholder="e.g., https://company.com/careers",
