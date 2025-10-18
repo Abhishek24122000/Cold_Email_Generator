@@ -1,120 +1,120 @@
-Cold Mail Generator — AI-Powered Personalized Outreach Tool
+# 🧊 Cold Mail Generator — AI-Powered Personalized Outreach Tool
 
-An intelligent cold email generator designed for modern job seekers and professionals.
-This tool transforms any careers page into a personalized, portfolio-aware cold email using the power of large language models and intelligent web scraping.
+An intelligent cold email generator designed for modern job seekers and professionals.  
+This tool transforms any careers page into a personalized, portfolio-aware cold email using the power of **large language models** and **intelligent web scraping**.
 
-Built with Streamlit, LangChain, and Meta’s LLaMA 70B via Groq API.
+Built with **Streamlit**, **LangChain**, and **Meta’s LLaMA 70B via Groq API**.
 
-🌐 Live Demo
+---
 
-👉 https://coldemailgenerator-tool.streamlit.app
+## 🌐 Live Demo  
+👉 [https://coldemailgenerator-tool.streamlit.app](https://coldemailgenerator-tool.streamlit.app)
 
-⚙️ What It Does
+---
 
-Scrapes real-time job data from a careers page URL
+## ⚙️ What It Does
 
-Extracts and parses resume data (PDF)
+- Scrapes real-time job data from a **careers page URL**  
+- Extracts and parses **resume data (PDF)**  
+- Injects **portfolio and project links** automatically  
+- Lets users choose the **purpose** of the email (e.g., job, collaboration, mentorship)  
+- Generates **personalized, context-rich cold emails** in multiple languages  
+- Uses **on-screen API key input** for enhanced privacy — no `.env` storage required  
 
-Injects portfolio and project links automatically
+---
 
-Lets users choose the purpose of the email (e.g., job, collaboration, mentorship)
+## 🧩 Why It Matters
 
-Generates personalized, context-rich cold emails in multiple languages
+Traditional outreach = ignored emails.  
+Cold Mail Generator = **relevant, resume-aware, human-sounding** messages that actually connect.
 
-Uses on-screen API key input for enhanced privacy — no .env storage required
+- References **real job descriptions**  
+- Integrates **your resume & skills**  
+- Embeds **your portfolio or project links**  
+- Writes in a **professional tone**, instantly  
 
-🧩 Why It Matters
+Your email becomes **an intelligent pitch**, not a generic spam message.
 
-Traditional outreach = ignored emails.
-Cold Mail Generator = relevant, resume-aware, human-sounding messages that actually connect.
+---
 
-References real job descriptions
+## 🔥 Features
 
-Integrates your resume & skills
+- **LangChain Web Scraper** → Extracts live job content  
+- **PyMuPDF (fitz)** → Parses PDF resumes  
+- **Groq API (LLaMA 70B)** → Generates multilingual emails  
+- **Minimalist Streamlit UI** → Dark theme, optimized for speed  
+- **Dynamic API Key Input** → Enter directly in-app, session-only  
+- **Smart Prompt Templates** → Personalized for job, internship, or project  
 
-Embeds your portfolio or project links
+---
 
-Writes in a professional tone, instantly
+## 🧠 Technical Workflow
 
-Your email becomes an intelligent pitch, not a generic spam message.
-
-🔥 Features
-
-LangChain Web Scraper → Extracts live job content
-
-PyMuPDF (fitz) → Parses PDF resumes
-
-Groq API (LLaMA 70B) → Generates multilingual emails
-
-Minimalist Streamlit UI → Dark theme, optimized for speed
-
-Dynamic API Key Input → Enter directly in-app, session-only
-
-Smart Prompt Templates → Personalized for job, internship, or project
-
-🧠 Technical Workflow
 USER INTERFACE (Streamlit)
-    │
-    ├── User Inputs
-    │     ├─ Job / Career Page URL
-    │     ├─ Resume (PDF Upload)
-    │     ├─ Name / Role / Summary
-    │     ├─ Project & Portfolio Links
-    │     ├─ Language + Purpose
-    │     └─ API Key (entered on-screen, session-only)
-    │
-    ├── LangChain WebBaseLoader
-    │       ↓
-    │   Job Description Scraper
-    │       ↓
-    ├── PDF Parser (PyMuPDF)
-    │       ↓
-    │   Resume Text Extraction
-    │       ↓
-    ├── NLP Cleaning + Prompt Engineering
-    │       ↓
-    ├── Groq API (LLaMA 70B / 3.3-70B)
-    │       ↓
-    ├── Email Generation
-    │       ↓
-    └── Streamlit Output Display
+│
+├── User Inputs
+│ ├─ Job / Career Page URL
+│ ├─ Resume (PDF Upload)
+│ ├─ Name / Role / Summary
+│ ├─ Project & Portfolio Links
+│ ├─ Language + Purpose
+│ └─ API Key (entered on-screen, session-only)
+│
+├── LangChain WebBaseLoader
+│ ↓
+│ Job Description Scraper
+│ ↓
+├── PDF Parser (PyMuPDF)
+│ ↓
+│ Resume Text Extraction
+│ ↓
+├── NLP Cleaning + Prompt Engineering
+│ ↓
+├── Groq API (LLaMA 70B / 3.3-70B)
+│ ↓
+├── Email Generation
+│ ↓
+└── Streamlit Output Display
 
 
-Everything runs locally + API-side, no persistent data or API keys are stored.
-Each session remains isolated and temporary — security by design.
+Everything runs **locally + API-side**, no persistent data or API keys are stored.  
+Each session remains isolated and temporary — **security by design**.
 
-💻 Tech Stack
-Component	Technology
-Frontend UI	Streamlit
-Resume Parsing	PyMuPDF (fitz)
-Web Scraping	LangChain WebBaseLoader
-LLM Engine	Meta’s LLaMA 70B via Groq API
-Backend Logic	Python + Prompt Engineering
-Deployment	Streamlit Cloud
-🚀 How to Use (Live App)
+---
 
-Visit coldemailgenerator-tool.streamlit.app
+## 💻 Tech Stack
 
-Enter your Groq API key in the on-screen input box
+| Component | Technology |
+|------------|-------------|
+| Frontend UI | Streamlit |
+| Resume Parsing | PyMuPDF (`fitz`) |
+| Web Scraping | LangChain WebBaseLoader |
+| LLM Engine | Meta’s LLaMA 70B via Groq API |
+| Backend Logic | Python + Prompt Engineering |
+| Deployment | Streamlit Cloud |
 
-Paste a job or career page URL
+---
 
-Fill in your name, role, and about section
+## 🚀 How to Use (Live App)
 
-Upload your resume (PDF)
-
-Add LinkedIn, GitHub, or Portfolio links
-
-Optionally highlight a key project
-
-Choose language and email purpose
-
-Click “Generate Cold Email” 📨
+1. Visit **[coldemailgenerator-tool.streamlit.app](https://coldemailgenerator-tool.streamlit.app)**  
+2. Enter your **Groq API key** in the on-screen input box  
+3. Paste a **job or career page URL**  
+4. Fill in **your name, role, and about section**  
+5. Upload your **resume (PDF)**  
+6. Add **LinkedIn, GitHub, or Portfolio** links  
+7. Optionally highlight a **key project**  
+8. Choose **language** and **email purpose**  
+9. Click **“Generate Cold Email”** 📨  
 
 Your custom, professional cold email will appear instantly.
 
-⚙️ Local Development Setup
-1. Clone Repository
+---
+
+## ⚙️ Local Development Setup
+
+### 1. Clone Repository
+
 git clone https://github.com/Abhishek24122000/Cold_Email_Generator.git
 cd Cold_Email_Generator
 
@@ -125,9 +125,9 @@ pip install -r requirements.txt
 streamlit run main.py
 
 
-💡 You can still set your API key from the Streamlit interface directly —
+💡 You can set your API key directly inside the Streamlit app interface —
 no .env setup required.
-However, you can optionally create a .env for local testing if preferred:
+However, for local testing, you can optionally use a .env file:
 
 GROQ_API_KEY=your_groq_api_key_here
 
