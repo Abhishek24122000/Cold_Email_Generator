@@ -51,31 +51,18 @@ Your email becomes **an intelligent pitch**, not a generic spam message.
 ## 🧠 Technical Workflow
 
 USER INTERFACE (Streamlit)
-│
-├── User Inputs
-│ ├─ Job / Career Page URL
-│ ├─ Resume (PDF Upload)
-│ ├─ Name / Role / Summary
-│ ├─ Project & Portfolio Links
-│ ├─ Language + Purpose
-│ └─ API Key (entered on-screen, session-only)
-│
-├── LangChain WebBaseLoader
-│ ↓
-│ Job Description Scraper
-│ ↓
-├── PDF Parser (PyMuPDF)
-│ ↓
-│ Resume Text Extraction
-│ ↓
-├── NLP Cleaning + Prompt Engineering
-│ ↓
-├── Groq API (LLaMA 70B / 3.3-70B)
-│ ↓
-├── Email Generation
-│ ↓
-└── Streamlit Output Display
-
+↓
+User Inputs (Job URL, Resume, Role, Name, About, Portfolio, Language, Purpose, API Key)
+↓
+LangChain WebBaseLoader → Scrapes Careers Page for Job Descriptions
+↓
+PyMuPDF (fitz) → Extracts Text from Uploaded Resume
+↓
+Data Cleaning + Prompt Engineering → Combines Job & Resume Context
+↓
+Groq API (LLaMA 70B / 3.3-70B) → Generates Personalized Cold Email
+↓
+Streamlit Frontend → Displays Editable Email Output
 
 Everything runs **locally + API-side**, no persistent data or API keys are stored.  
 Each session remains isolated and temporary — **security by design**.
