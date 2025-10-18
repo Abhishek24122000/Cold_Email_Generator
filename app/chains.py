@@ -5,14 +5,21 @@ from langchain_core.output_parsers import JsonOutputParser
 from langchain_core.exceptions import OutputParserException
 from dotenv import load_dotenv
 
+# keep dotenv load for fallback if user didn't set a session key
 load_dotenv()
 
 class Chain:
 
-    def __init__(self):
+    def __init__(self, api_key: str = None):
+        """
+        Accept an optional runtime api_key.
+        If api_key is provided, use it. Otherwise fall back to environment variable GROQ_API_KEY.
+        """
+        groq_key = api_key if api_key else os.getenv("GROQ_API_KEY")
+
         self.llm = ChatGroq(
             temperature=0,
-            groq_api_key=os.getenv("GROQ_API_KEY"),
+            groq_api_key=groq_key,
             model_name="llama3-70b-8192"
         )
 
