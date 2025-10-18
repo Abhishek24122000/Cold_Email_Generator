@@ -7,6 +7,51 @@ from utils import clean_text, clean_url
 st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
 st.cache_resource.clear()
 
+# ----------------------
+# Runtime API key prompt
+# ----------------------
+# store key in session only (no disk writes)
+if "GROQ_API_KEY" not in st.session_state:
+    st.session_state["GROQ_API_KEY"] = None
+
+st.markdown(
+    """
+    <style>
+    .api-box { background:#f6f7fb; padding:10px; border-radius:8px; margin-bottom:12px;}
+    .api-label { font-weight:600; font-size:14px;}
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+with st.container():
+    st.write("")  # small spacer
+    st.markdown("<div class='api-box'>", unsafe_allow_html=True)
+    st.markdown("<div class='api-label'>🔑 Enter Groq API Key (session-only)</div>", unsafe_allow_html=True)
+    api_input = st.text_input("Paste GROQ API key here (will NOT be stored on disk)", type="password", placeholder="groq-xxxx...")
+    col1, col2 = st.columns([1,1])
+    with col1:
+        if st.button("Set API Key"):
+            if not api_input.strip():
+                st.warning("Please paste a valid API key before setting.")
+            else:
+                st.session_state["GROQ_API_KEY"] = api_input.strip()
+                st.success("API key set for this session.")
+    with col2:
+        if st.button("Clear API Key"):
+            st.session_state["GROQ_API_KEY"] = None
+            st.info("API key cleared from session.")
+    # show masked status
+    if st.session_state.get("GROQ_API_KEY"):
+        masked = "●" * 8
+        st.markdown(f"**Status:** Active ({masked}) — will be used for LLM calls.")
+    else:
+        st.markdown("**Status:** No API key set. Falling back to environment variable if present.")
+    st.markdown("</div>", unsafe_allow_html=True)
+
+# ----------------------
+# helper: extract text from PDF
+# ----------------------
 def extract_text_from_pdf(uploaded_file):
     try:
         doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
@@ -18,6 +63,9 @@ def extract_text_from_pdf(uploaded_file):
         st.error(f"❌ Failed to extract resume text: {e}")
         return ""
 
+# ----------------------
+# app creator (unchanged)
+# ----------------------
 def create_streamlit_app(llm, clean_text):
     st.markdown(
         """
@@ -138,6 +186,10 @@ def create_streamlit_app(llm, clean_text):
         unsafe_allow_html=True
     )
 
+# ----------------------
+# Instantiate Chain with session key (or fallback to env inside Chain)
+# ----------------------
 if __name__ == "__main__":
-    chain = Chain()
+    api_key = st.session_state.get("GROQ_API_KEY")
+    chain = Chain(api_key=api_key)
     create_streamlit_app(chain, clean_text)
