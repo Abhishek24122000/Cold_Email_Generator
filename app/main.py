@@ -54,9 +54,11 @@ def create_streamlit_app(llm, clean_text):
             z-index: 999;
             font-family: 'Segoe UI', sans-serif;
         }
-        .small-label { font-size:13px; color:#444444; font-weight:600; margin-bottom:6px; }
+        .small-label { font-size:13px; color:#444444; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:8px; }
         .api-status { font-size:12px; color:#bbbbbb; margin-top:8px; }
         .stButton>button { padding:6px 10px !important; font-size:13px !important; height:34px !important; }
+        .api-help { font-size:14px; color:#9bb1ff; text-decoration:none; }
+        .api-help:hover { color:#dfeeff; text-decoration:underline; }
         </style>
         """,
         unsafe_allow_html=True
@@ -65,26 +67,24 @@ def create_streamlit_app(llm, clean_text):
     st.markdown("<div class='main-header'>🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)</div>", unsafe_allow_html=True)
     st.markdown("<div class='subtitle'>Automate professional outreach in seconds</div>", unsafe_allow_html=True)
 
-    # -------- Groq API: default native input (no white panel), wider, prefilled from env if available --------
     env_key = os.getenv("GROQ_API_KEY", "")
     if "GROQ_API_KEY" not in st.session_state:
         st.session_state["GROQ_API_KEY"] = None
 
     col_input, col_buttons = st.columns([3, 1], gap="small")
     with col_input:
-        st.markdown("<div class='small-label'>🔑 Groq API Key (session-only)</div>", unsafe_allow_html=True)
+        st.markdown("<div class='small-label'>🔑 Groq API Key (session-only) <a class='api-help' href='https://console.groq.com/keys' target='_blank' title='Opens Groq Console — copy the API key (groq-...) from " 'Keys' " and paste here'>ⓘ</a></div>", unsafe_allow_html=True)
         api_input = st.text_input("", type="password", placeholder="paste groq-xxxx... (session only)", value=env_key, key="groq_input")
-        # status below input
         if st.session_state.get("GROQ_API_KEY"):
             masked = "●" * 8
             st.markdown(f"<div class='api-status'><strong>Status:</strong> Active ({masked}) — used for LLM calls.</div>", unsafe_allow_html=True)
         elif env_key:
             st.markdown("<div class='api-status'><strong>Status:</strong> Found in environment (will be used if you don't set session key).</div>", unsafe_allow_html=True)
         else:
-            st.markdown("<div class='api-status'><strong>Status:</strong> No API key set. Falling back to environment if present.</div>", unsafe_allow_html=True)
+            st.markdown("<div class='api-status'><strong>Status:</strong> No API key set. Paste your Groq key using the ⓘ link above to get one.</div>", unsafe_allow_html=True)
 
     with col_buttons:
-        st.write("")  # align vertically with input
+        st.write("")
         btn_col1, btn_col2 = st.columns([1,1], gap="small")
         with btn_col1:
             if st.button("Set", key="set_api"):
@@ -98,7 +98,6 @@ def create_streamlit_app(llm, clean_text):
                 st.session_state["GROQ_API_KEY"] = None
                 st.info("API key cleared from session.")
 
-    # ---------- Name | Role | About (side-by-side) ----------
     col_name, col_role, col_about = st.columns([1,1,1], gap="small")
     with col_name:
         name_input = st.text_input("Your Name", placeholder="Full name", key="name_input")
@@ -109,7 +108,6 @@ def create_streamlit_app(llm, clean_text):
 
     st.markdown("---")
 
-    # ---------- Resume | Links | Project (one line compact) ----------
     col_resume, col_links, col_project = st.columns([1,1,1], gap="small")
     with col_resume:
         st.markdown("<div class='small-label'>Resume (PDF)</div>", unsafe_allow_html=True)
@@ -123,7 +121,6 @@ def create_streamlit_app(llm, clean_text):
 
     st.markdown("---")
 
-    # ---------- Purpose (left) and Language (right) swapped as requested ----------
     col_purpose, col_language = st.columns([1,1], gap="small")
     with col_purpose:
         st.markdown("<div class='small-label'>Purpose</div>", unsafe_allow_html=True)
@@ -155,13 +152,12 @@ def create_streamlit_app(llm, clean_text):
     st.markdown(f"**Reason Explained:** {reason_explanations[selected_reason_ui]}")
     selected_reason_short = selected_reason_ui.split(" ")[0] if selected_reason_ui != "Follow-Up on Application" else "Follow-Up"
 
-    # ---------- Job URL and Generate ----------
     url_input = st.text_input("🌐 Job / Career Page URL", placeholder="e.g., https://company.com/careers", key="url_input")
     submit_col_left, submit_col_right = st.columns([1,1], gap="small")
     with submit_col_left:
         submit_button = st.button("Generate Cold Email", key="generate_btn")
     with submit_col_right:
-        st.write("")  # keep layout balanced
+        st.write("")
 
     if submit_button:
         try:
