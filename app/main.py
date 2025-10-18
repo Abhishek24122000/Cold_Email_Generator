@@ -1,57 +1,16 @@
+# main.py
+import os
 import streamlit as st
 import fitz
 from langchain_community.document_loaders import WebBaseLoader
-from chains import Chain
 from utils import clean_text, clean_url
 
 st.set_page_config(layout="wide", page_title="Cold Email Generator", page_icon="📧")
-st.cache_resource.clear()
+try:
+    st.cache_resource.clear()
+except Exception:
+    pass
 
-# ----------------------
-# Runtime API key prompt
-# ----------------------
-# store key in session only (no disk writes)
-if "GROQ_API_KEY" not in st.session_state:
-    st.session_state["GROQ_API_KEY"] = None
-
-st.markdown(
-    """
-    <style>
-    .api-box { background:#f6f7fb; padding:10px; border-radius:8px; margin-bottom:12px;}
-    .api-label { font-weight:600; font-size:14px;}
-    </style>
-    """,
-    unsafe_allow_html=True
-)
-
-with st.container():
-    st.write("")  # small spacer
-    st.markdown("<div class='api-box'>", unsafe_allow_html=True)
-    st.markdown("<div class='api-label'>🔑 Enter Groq API Key (session-only)</div>", unsafe_allow_html=True)
-    api_input = st.text_input("Paste GROQ API key here (will NOT be stored on disk)", type="password", placeholder="groq-xxxx...")
-    col1, col2 = st.columns([1,1])
-    with col1:
-        if st.button("Set API Key"):
-            if not api_input.strip():
-                st.warning("Please paste a valid API key before setting.")
-            else:
-                st.session_state["GROQ_API_KEY"] = api_input.strip()
-                st.success("API key set for this session.")
-    with col2:
-        if st.button("Clear API Key"):
-            st.session_state["GROQ_API_KEY"] = None
-            st.info("API key cleared from session.")
-    # show masked status
-    if st.session_state.get("GROQ_API_KEY"):
-        masked = "●" * 8
-        st.markdown(f"**Status:** Active ({masked}) — will be used for LLM calls.")
-    else:
-        st.markdown("**Status:** No API key set. Falling back to environment variable if present.")
-    st.markdown("</div>", unsafe_allow_html=True)
-
-# ----------------------
-# helper: extract text from PDF
-# ----------------------
 def extract_text_from_pdf(uploaded_file):
     try:
         doc = fitz.open(stream=uploaded_file.read(), filetype="pdf")
@@ -63,9 +22,6 @@ def extract_text_from_pdf(uploaded_file):
         st.error(f"❌ Failed to extract resume text: {e}")
         return ""
 
-# ----------------------
-# app creator (unchanged)
-# ----------------------
 def create_streamlit_app(llm, clean_text):
     st.markdown(
         """
@@ -75,12 +31,13 @@ def create_streamlit_app(llm, clean_text):
             font-weight: 800;
             color: #FFFFFF !important;
             text-align: left;
-            margin-bottom: 20px;
+            margin-bottom: 4px;
         }
-        .title {
-            font-size: 24px;
-            font-weight: 600;
-            color: #4F4F4F;
+        .subtitle {
+            font-size: 16px;
+            color: #DDDDDD;
+            margin-top: -6px;
+            margin-bottom: 10px;
         }
         footer {visibility: hidden;}
         .footer-text {
@@ -97,35 +54,89 @@ def create_streamlit_app(llm, clean_text):
             z-index: 999;
             font-family: 'Segoe UI', sans-serif;
         }
+        .small-label { font-size:13px; color:#444444; font-weight:600; margin-bottom:6px; }
+        .api-status { font-size:12px; color:#bbbbbb; margin-top:8px; }
+        .stButton>button { padding:6px 10px !important; font-size:13px !important; height:34px !important; }
         </style>
-
-        <div class='main-header'>
-            🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)<br>
-            Automate professional outreach in seconds
-        </div>
-        <hr>
         """,
         unsafe_allow_html=True
     )
 
-    url_input = st.text_input("🌐 Enter the Job/Career Page URL:",
-                              placeholder="e.g., https://company.com/careers",
-                              help="Paste the careers or job listings page URL")
+    st.markdown("<div class='main-header'>🚀 Cold Email Generator Tool Powered by LLM (LLaMA 70B + LangChain)</div>", unsafe_allow_html=True)
+    st.markdown("<div class='subtitle'>Automate professional outreach in seconds</div>", unsafe_allow_html=True)
 
-    name_input = st.text_input("Your Name:", placeholder="Your full name")
-    role_input = st.text_input("Your Role:", placeholder="e.g., Data Analyst")
-    about_yourself_input = st.text_area("Tell us About Yourself:", placeholder="Summary or intro")
+    # -------- Groq API: default native input (no white panel), wider, prefilled from env if available --------
+    env_key = os.getenv("GROQ_API_KEY", "")
+    if "GROQ_API_KEY" not in st.session_state:
+        st.session_state["GROQ_API_KEY"] = None
+
+    col_input, col_buttons = st.columns([3, 1], gap="small")
+    with col_input:
+        st.markdown("<div class='small-label'>🔑 Groq API Key (session-only)</div>", unsafe_allow_html=True)
+        api_input = st.text_input("", type="password", placeholder="paste groq-xxxx... (session only)", value=env_key, key="groq_input")
+        # status below input
+        if st.session_state.get("GROQ_API_KEY"):
+            masked = "●" * 8
+            st.markdown(f"<div class='api-status'><strong>Status:</strong> Active ({masked}) — used for LLM calls.</div>", unsafe_allow_html=True)
+        elif env_key:
+            st.markdown("<div class='api-status'><strong>Status:</strong> Found in environment (will be used if you don't set session key).</div>", unsafe_allow_html=True)
+        else:
+            st.markdown("<div class='api-status'><strong>Status:</strong> No API key set. Falling back to environment if present.</div>", unsafe_allow_html=True)
+
+    with col_buttons:
+        st.write("")  # align vertically with input
+        btn_col1, btn_col2 = st.columns([1,1], gap="small")
+        with btn_col1:
+            if st.button("Set", key="set_api"):
+                if not api_input or not api_input.strip():
+                    st.warning("Please paste a valid API key before setting.")
+                else:
+                    st.session_state["GROQ_API_KEY"] = api_input.strip()
+                    st.success("API key set for this session.")
+        with btn_col2:
+            if st.button("Clear", key="clear_api"):
+                st.session_state["GROQ_API_KEY"] = None
+                st.info("API key cleared from session.")
+
+    # ---------- Name | Role | About (side-by-side) ----------
+    col_name, col_role, col_about = st.columns([1,1,1], gap="small")
+    with col_name:
+        name_input = st.text_input("Your Name", placeholder="Full name", key="name_input")
+    with col_role:
+        role_input = st.text_input("Your Role", placeholder="e.g., Data Analyst", key="role_input")
+    with col_about:
+        about_yourself_input = st.text_area("Tell us About Yourself", placeholder="Short intro", height=120, key="about_input")
 
     st.markdown("---")
-    st.subheader("Upload Resume & Portfolio")
 
-    resume_file = st.file_uploader("Upload Your Resume (PDF)", type=["pdf"])
-    links_input = st.text_area("LinkedIn, GitHub, Portfolio:", placeholder="Paste your links here...")
-    project_input = st.text_area("🛠 Highlight a Project (optional):", placeholder="Describe a key project you want to showcase")
+    # ---------- Resume | Links | Project (one line compact) ----------
+    col_resume, col_links, col_project = st.columns([1,1,1], gap="small")
+    with col_resume:
+        st.markdown("<div class='small-label'>Resume (PDF)</div>", unsafe_allow_html=True)
+        resume_file = st.file_uploader("", type=["pdf"], key="resume_file")
+    with col_links:
+        st.markdown("<div class='small-label'>Links (LinkedIn / GitHub / Portfolio)</div>", unsafe_allow_html=True)
+        links_input = st.text_input("", placeholder="Paste links (comma separated)", max_chars=220, key="links_input")
+    with col_project:
+        st.markdown("<div class='small-label'>Highlight a Project (optional)</div>", unsafe_allow_html=True)
+        project_input = st.text_input("", placeholder="Project title or short note", max_chars=120, key="project_input")
 
-    language_input = st.selectbox("Email Language:", [
-        "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
-    ])
+    st.markdown("---")
+
+    # ---------- Purpose (left) and Language (right) swapped as requested ----------
+    col_purpose, col_language = st.columns([1,1], gap="small")
+    with col_purpose:
+        st.markdown("<div class='small-label'>Purpose</div>", unsafe_allow_html=True)
+        selected_reason_ui = st.selectbox("", [
+            "Job Application", "Internship Request", "Project Collaboration", "Service/Product Pitch",
+            "Freelance Opportunity", "Appreciation & Networking", "Mentorship Request",
+            "Volunteer Contribution", "Business Partnership", "Media/PR Inquiry", "Follow-Up on Application"
+        ], key="reason_select")
+    with col_language:
+        st.markdown("<div class='small-label'>Email Language</div>", unsafe_allow_html=True)
+        language_input = st.selectbox("", [
+            "English", "Japanese", "Spanish", "French", "German", "Hindi", "Arabic", "Chinese", "Korean", "Russian", "Portuguese"
+        ], key="language_input")
 
     reason_explanations = {
         "Job Application": "Express interest in a job role and introduce yourself to the hiring team.",
@@ -141,14 +152,23 @@ def create_streamlit_app(llm, clean_text):
         "Follow-Up on Application": "Check in on your application status after applying."
     }
 
-    selected_reason_ui = st.selectbox("✉️ Why are you writing this email?", list(reason_explanations.keys()))
     st.markdown(f"**Reason Explained:** {reason_explanations[selected_reason_ui]}")
     selected_reason_short = selected_reason_ui.split(" ")[0] if selected_reason_ui != "Follow-Up on Application" else "Follow-Up"
 
-    submit_button = st.button("Generate Cold Email")
+    # ---------- Job URL and Generate ----------
+    url_input = st.text_input("🌐 Job / Career Page URL", placeholder="e.g., https://company.com/careers", key="url_input")
+    submit_col_left, submit_col_right = st.columns([1,1], gap="small")
+    with submit_col_left:
+        submit_button = st.button("Generate Cold Email", key="generate_btn")
+    with submit_col_right:
+        st.write("")  # keep layout balanced
 
     if submit_button:
         try:
+            from chains import Chain
+            runtime_key = st.session_state.get("GROQ_API_KEY") or env_key or None
+            chain = Chain(api_key=runtime_key)
+
             raw_url = clean_url(url_input)
             loader = WebBaseLoader([raw_url])
             raw_text = loader.load().pop().page_content
@@ -156,9 +176,9 @@ def create_streamlit_app(llm, clean_text):
 
             resume_summary = extract_text_from_pdf(resume_file) if resume_file else ""
 
-            jobs = llm.extract_jobs(data)
+            jobs = chain.extract_jobs(data)
             for job in jobs:
-                email = llm.write_mail(
+                email = chain.write_mail(
                     job=job,
                     name=name_input,
                     role=role_input,
@@ -186,10 +206,5 @@ def create_streamlit_app(llm, clean_text):
         unsafe_allow_html=True
     )
 
-# ----------------------
-# Instantiate Chain with session key (or fallback to env inside Chain)
-# ----------------------
 if __name__ == "__main__":
-    api_key = st.session_state.get("GROQ_API_KEY")
-    chain = Chain(api_key=api_key)
-    create_streamlit_app(chain, clean_text)
+    create_streamlit_app(None, clean_text)
